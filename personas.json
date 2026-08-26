@@ -1,0 +1,30 @@
+{
+    "supervisores": [
+        {
+            "dni": "8888888",
+            "nombre": "prueba repetición",
+            "sector_cargo": "Mantenimiento General",
+            "legajo": "5656"
+        },
+        {
+            "dni": "40315848",
+            "nombre": "tadeo agnoil",
+            "sector_cargo": "mantenimiento",
+            "legajo": "3427"
+        }
+    ],
+    "tecnicos": [
+        {
+            "dni": "12345678",
+            "nombre": "Tecnico Prueba",
+            "especialidad": "Prueba",
+            "legajo": "1111"
+        },
+        {
+            "dni": "41160560",
+            "nombre": "Fernando TECNOSER",
+            "especialidad": "TÉCNICO en computación",
+            "legajo": "1234"
+        }
+    ]
+}
