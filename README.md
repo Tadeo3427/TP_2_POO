@@ -89,25 +89,25 @@ El proyecto está diseñado siguiendo la separación de responsabilidades en cap
 
 ### Capa de Interfaz (UI):
 
-**app_web.py:** Interfaz principal basada en Web UI con Streamlit.
+- **app_web.py:** Interfaz principal basada en Web UI con Streamlit.
 
-**main.py:** Punto de entrada secundario por consola (CLI) para depuración.
+- **main.py:** Punto de entrada secundario por consola (CLI) para depuración.
 
 # Reglas de Negocio Destacadas
 
-**Gestión de Personal:**
+- **Gestión de Personal:**
 
-**DNI strictly numérico (7 u 8 dígitos).**
+- **DNI strictly numérico (7 u 8 dígitos).**
 
-**Unicidad cruzada de DNI y Legajo** (un técnico y un supervisor no pueden compartir identificadores).
+- **Unicidad cruzada de DNI y Legajo** (un técnico y un supervisor no pueden compartir identificadores).
 
-**Ciclo de Vida de una Orden de Trabajo:**
+- **Ciclo de Vida de una Orden de Trabajo:**
 
-**Transiciones permitidas:** pendiente ➡️ en progreso ➡️ finalizado.
+- **Transiciones permitidas:** pendiente ➡️ en progreso ➡️ finalizado.
 
-**Cierre obligatorio:** Al pasar a finalizado, exige la fecha de realización y la tarea ejecutada.
+- **Cierre obligatorio:** Al pasar a finalizado, exige la fecha de realización y la tarea ejecutada.
 
-Las tareas en estado finalizado o cancelado son inmutables.
+- Las tareas en estado finalizado o cancelado son inmutables.
 
 ## Estructura del Proyecto y Persistencia
 ```Plaintext
