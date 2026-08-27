@@ -1,0 +1,48 @@
+[
+    {
+        "id": 1,
+        "tag_equipo": "prueba2",
+        "descripcion_equipo": "prueba",
+        "sector": "pruena",
+        "detalle_tarea": "detalle de la tarea a realizar de prueba",
+        "fecha": "26/08/2026",
+        "estado": "finalizado",
+        "fecha_realizado": "26/08/2026",
+        "tarea_realizada": "se realiza la tarea de prueba de manera correcta",
+        "supervisor": {
+            "dni": "8888888",
+            "nombre": "prueba repetición",
+            "sector_cargo": "Mantenimiento General",
+            "legajo": "5656"
+        },
+        "tecnico": {
+            "dni": "12345678",
+            "nombre": "Tecnico Prueba",
+            "especialidad": "Prueba",
+            "legajo": "1111"
+        }
+    },
+    {
+        "id": 2,
+        "tag_equipo": "Imp-06",
+        "descripcion_equipo": "impresora HP 2016",
+        "sector": "Administración",
+        "detalle_tarea": "realizar limpieza de impresora, remplazo de cabezales. control de estado y nivel de tinta (remplazar de ser necesario)",
+        "fecha": "26/08/2026",
+        "estado": "cancelado",
+        "fecha_realizado": "",
+        "tarea_realizada": "",
+        "supervisor": {
+            "dni": "8888888",
+            "nombre": "prueba repetición",
+            "sector_cargo": "Mantenimiento General",
+            "legajo": "5656"
+        },
+        "tecnico": {
+            "dni": "12345678",
+            "nombre": "Tecnico Prueba",
+            "especialidad": "Prueba",
+            "legajo": "1111"
+        }
+    }
+]
