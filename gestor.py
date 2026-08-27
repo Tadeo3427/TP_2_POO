@@ -1,7 +1,7 @@
 import json
 import os
 from typing import List, Optional
-from modelos import Tarea, Supervisor, Tecnico
+from modelos import Tarea, Supervisor, Tecnico, Equipo
 from excepciones import (
     CampoVacioError,
     TareaNoEncontradaError,
@@ -21,10 +21,13 @@ class GestorTareas:
         self._tareas: List[Tarea] = []
         self._supervisores: List[Supervisor] = []
         self._tecnicos: List[Tecnico] = []
+        self._equipos: List[Equipo] = []
+
 
         # Cargar datos al instanciar
         self.cargar_personas_desde_json()
         self.cargar_desde_json()
+        self.cargar_equipos_desde_json()
 
     # -------------------------------------------------------------------
     # PROPERTIES DE ACCESO PÚBLICO (READ-ONLY)
