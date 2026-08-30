@@ -12,9 +12,9 @@ from excepciones import (
 class GestorTareas:
     def __init__(
         self,
-        archivo_json: str = "tareas.json",
         archivo_equipos: str = "equipos.json",
         archivo_personas: str = "personas.json",
+         archivo_json: str = "tareas.json",
     ):
         self._archivo_json = archivo_json
         self._archivo_equipos = archivo_equipos
