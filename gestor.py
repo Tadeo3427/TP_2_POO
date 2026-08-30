@@ -13,11 +13,14 @@ class GestorTareas:
     def __init__(
         self,
         archivo_json: str = "tareas.json",
+        archivo_equipos: str = "equipos.json",
         archivo_personas: str = "personas.json",
     ):
         self._archivo_json = archivo_json
+        self._archivo_equipos = archivo_equipos
         self._archivo_personas = archivo_personas
-        
+
+        # Inicializar listas vacías para almacenar tareas, supervisores, técnicos y equipos
         self._tareas: List[Tarea] = []
         self._supervisores: List[Supervisor] = []
         self._tecnicos: List[Tecnico] = []
@@ -38,6 +41,11 @@ class GestorTareas:
         return list(self._tareas)
 
     @property
+    def equipos(self) -> List[Equipo]:
+        """Retorna una copia de la lista de equipos."""
+        return list(self._equipos)
+
+    @property
     def supervisores(self) -> List[Supervisor]:
         """Retorna una copia de la lista de supervisores."""
         return list(self._supervisores)
@@ -48,8 +56,8 @@ class GestorTareas:
         return list(self._tecnicos)
 
 # -------------------------------------------------------------------
-    # GESTIÓN DE PERSONAL (SUPERVISORES Y TÉCNICOS)
-    # -------------------------------------------------------------------
+# GESTIÓN DE PERSONAL (SUPERVISORES Y TÉCNICOS)
+# -------------------------------------------------------------------
     def registrar_supervisor(self, dni: str, nombre: str, sector_cargo: str, legajo: str) -> Supervisor:
         campos = {
             "DNI": dni,
@@ -134,12 +142,42 @@ class GestorTareas:
         self.guardar_personas_en_json()
         return tec
 
+
     def listar_supervisores(self) -> List[Supervisor]:
         return list(self._supervisores)
+
 
     def listar_tecnicos(self) -> List[Tecnico]:
         return list(self._tecnicos)
 
+#-----------------------------------------------------------------------
+# Gestión de Equipos 
+#-----------------------------------------------------------------------
+    def registrar_equipo(self, tag: str, descripcion: str, sector: str) -> Equipo:
+        campos = {
+            "Tag de equipo": tag,
+            "Descripción de equipo": descripcion,
+            "Sector": sector,
+        }
+        for nombre_campo, valor in campos.items():
+            if not valor or not valor.strip():
+                raise CampoVacioError(f"El campo '{nombre_campo}' no puede estar vacío.")
+
+        tag_limpio = tag.strip().upper()
+
+        # Validar duplicados
+        for e in self._equipos:
+            if e.tag_equipo == tag_limpio:
+                raise CampoVacioError(f"Ya existe un equipo registrado con Tag {tag_limpio}.")
+
+        equipo = Equipo(
+            tag=tag_limpio,
+            descripcion=descripcion.strip(),
+            sector=sector.strip(),
+        )
+        self._equipos.append(equipo)
+        self.guardar_equipos_en_json()
+        return equipo
     # -------------------------------------------------------------------
     # 1. ALTA DE TAREA
     # -------------------------------------------------------------------
@@ -147,9 +185,7 @@ class GestorTareas:
         self,
         supervisor: Supervisor,
         tecnico: Tecnico,
-        tag_equipo: str,
-        descripcion_equipo: str,
-        sector: str,
+        equipo: Equipo,
         detalle_tarea: str,
         fecha: str,
     ) -> Tarea:
@@ -266,6 +302,41 @@ class GestorTareas:
     # -------------------------------------------------------------------
     # 6. PERSISTENCIA EN ARCHIVOS JSON
     # -------------------------------------------------------------------
+
+    # Guardar y cargar equipos
+    def guardar_equipos_en_json(self):
+        datos = [
+            {
+                "tag_equipo": e.tag,
+                "descripcion_equipo": e.descripcion,
+                "sector": e.sector,
+            }
+            for e in self._equipos
+        ]
+        with open(self._archivo_equipos, "w", encoding="utf-8") as f:
+            json.dump(datos, f, indent=4, ensure_ascii=False)
+
+    def cargar_equipos_desde_json(self):
+        if not os.path.exists(self._archivo_equipos):
+            self._equipos = []
+            return
+
+        try:
+            with open(self._archivo_equipos, "r", encoding="utf-8") as f:
+                datos = json.load(f)
+                self._equipos = [
+                    Equipo(
+                        tag=e["tag_equipo"],
+                        descripcion=e["descripcion_equipo"],
+                        sector=e["sector"],
+                    )
+                    for e in datos
+                ]
+        except Exception:
+            self._equipos = []
+
+    # Guardar y cargar supervisores y técnicos
+    
     def guardar_personas_en_json(self):
         datos = {
             "supervisores": [
@@ -321,14 +392,16 @@ class GestorTareas:
             self._supervisores = []
             self._tecnicos = []
 
+    # Guardar y cargar tareas.        
+
     def guardar_en_json(self):
         datos = []
         for t in self._tareas:
             datos.append({
                 "id": t.id,
-                "tag_equipo": t.tag_equipo,
-                "descripcion_equipo": t.descripcion_equipo,
-                "sector": t.sector,
+                "tag_equipo": t.equipo.tag,
+                "descripcion_equipo": t.equipo.descripcion,
+                "sector": t.equipo.sector,
                 "detalle_tarea": t.detalle_tarea,
                 "fecha": t.fecha,
                 "estado": t.estado,
@@ -363,6 +436,7 @@ class GestorTareas:
                 for d in datos:
                     sup_d = d["supervisor"]
                     tec_d = d["tecnico"]
+                    eq_d = d["equipo"]
 
                     supervisor = Supervisor(
                         dni=sup_d["dni"],
@@ -378,12 +452,16 @@ class GestorTareas:
                         legajo=tec_d["legajo"],
                     )
 
+                    equipo = Equipo(
+                        tag=eq_d["tag"],
+                        descripcion=eq_d["descripcion"],
+                        sector=eq_d["sector"],
+                    )
+
                     tarea = Tarea(
                         supervisor=supervisor,
                         tecnico=tecnico,
-                        tag_equipo=d["tag_equipo"],
-                        descripcion_equipo=d["descripcion_equipo"],
-                        sector=d["sector"],
+                        equipo=equipo,
                         detalle_tarea=d["detalle_tarea"],
                         fecha=d["fecha"],
                         estado=d["estado"],

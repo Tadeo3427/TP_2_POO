@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-
+# Clase abstracta Persona
 class Persona(ABC):
     def __init__(self, dni: str, nombre: str):
         self._dni = dni
@@ -26,7 +26,7 @@ class Persona(ABC):
     def presentacion(self):
         raise NotImplementedError
 
-
+# Clase Supervisor que hereda de Persona
 class Supervisor(Persona):
     def __init__(self, dni: str, nombre: str, sector_cargo: str, legajo: str):
         super().__init__(dni, nombre)
@@ -60,7 +60,7 @@ class Supervisor(Persona):
     def presentacion(self):
         return f"Supervisor: {self.nombre} (Legajo: {self.legajo}) , ({self.sector_cargo})"
 
-
+# Clase Tecnico que hereda de Persona
 class Tecnico(Persona):
     def __init__(self, dni: str, nombre: str, especialidad: str, legajo: str):
         super().__init__(dni, nombre)
@@ -85,39 +85,51 @@ class Tecnico(Persona):
 
     def presentacion(self):
         return f"Técnico: {self.nombre} , ({self.especialidad})"
-
+    
+# Clase Equipo para representar los equipos de trabajo
 class Equipo:
     def __init__(self,
             tag:str,
             descripcion:str,
             sector:str
     ):
-        self._tag = tag
-        self._descripcion = descripcion
-        self._sector = sector
+        self._tag = tag.strip().upper()
+        self._descripcion = descripcion.strip()
+        self._sector = sector.strip()
 
     @property
     def tag(self):
         return self._tag
 
+    @tag.setter
+    def tag(self, value):
+        self._tag = value.strip().upper()
+
     @property
     def descripcion(self):
         return self._descripcion
 
+    @descripcion.setter
+    def descripcion(self, value):
+        self._descripcion = value.strip()
+ 
     @property
     def sector(self):
         return self._sector
 
+    @sector.setter
+    def sector(self, value):
+        self._sector = value.strip()
+
+# Clase Tarea para representar las tareas asignadas a los técnicos
 class Tarea:
     _ultimo_id = 0
 
     def __init__(
         self,
-        supervisor: Supervisor,
-        tecnico: Tecnico,
-        tag_equipo: str,
-        descripcion_equipo: str,
-        sector: str,
+        supervisor: Supervisor, # Recibe la instancia completa de Supervisor
+        tecnico: Tecnico,       # Recibe la instancia completa de Tecnico
+        equipo: Equipo,         # Recibe la instancia completa de Equipo
         detalle_tarea: str,
         fecha: str,
         estado: str = "pendiente",
@@ -135,9 +147,7 @@ class Tarea:
 
         self._supervisor = supervisor
         self._tecnico = tecnico
-        self._tag_equipo = tag_equipo
-        self._descripcion_equipo = descripcion_equipo
-        self._sector = sector
+        self._equipo = equipo
         self._detalle_tarea = detalle_tarea
         self._fecha = fecha
         self._estado = estado
@@ -157,28 +167,9 @@ class Tarea:
         return self._tecnico
 
     @property
-    def tag_equipo(self):
-        return self._tag_equipo
+    def equipo(self) -> Equipo:
+        return self._equipo
 
-    @tag_equipo.setter
-    def tag_equipo(self, value):
-        self._tag_equipo = value
-
-    @property
-    def descripcion_equipo(self):
-        return self._descripcion_equipo
-
-    @descripcion_equipo.setter
-    def descripcion_equipo(self, value):
-        self._descripcion_equipo = value
-
-    @property
-    def sector(self):
-        return self._sector
-
-    @sector.setter
-    def sector(self, value):
-        self._sector = value
 
     @property
     def detalle_tarea(self):
@@ -223,9 +214,9 @@ class Tarea:
     def mostrar_detalle(self):
         detalle = (
             f"OT / ID: {self.id}\n"
-            f"Tag Equipo: {self.tag_equipo}\n"
-            f"Descripción Equipo: {self.descripcion_equipo}\n"
-            f"Sector: {self.sector}\n"
+            f"Tag Equipo: {self.equipo.tag}\n"
+            f"Descripción Equipo: {self.equipo.descripcion}\n"
+            f"Sector: {self.equipo.sector}\n"
             f"Detalle Tarea: {self.detalle_tarea}\n"
             f"Supervisor: {self.supervisor.nombre}\n"
             f"Técnico Asignado: {self.tecnico.nombre}\n"
