@@ -191,9 +191,9 @@ class GestorTareas:
     ) -> Tarea:
         # Validación de campos vacíos
         campos = {
-            "Tag de equipo": tag_equipo,
-            "Descripción de equipo": descripcion_equipo,
-            "Sector": sector,
+            "Tag de equipo": equipo.tag,
+            "Descripción de equipo": equipo.descripcion,
+            "Sector": equipo.sector,
             "Detalle de tarea": detalle_tarea,
             "Fecha": fecha,
         }
@@ -204,9 +204,7 @@ class GestorTareas:
         nueva_tarea = Tarea(
             supervisor=supervisor,
             tecnico=tecnico,
-            tag_equipo=tag_equipo.strip(),
-            descripcion_equipo=descripcion_equipo.strip(),
-            sector=sector.strip(),
+            equipo=equipo,
             detalle_tarea=detalle_tarea.strip(),
             fecha=fecha.strip(),
             estado="pendiente",
@@ -230,7 +228,7 @@ class GestorTareas:
         criterio_lower = criterio.lower().strip()
         resultados = [
             t for t in self._tareas
-            if criterio_lower in t.tag_equipo.lower() or criterio_lower in t.sector.lower()
+            if criterio_lower in t.equipo.tag.lower() or criterio_lower in t.equipo.sector.lower()
         ]
         if not resultados:
             raise TareaNoEncontradaError(f"No se encontraron tareas asociadas a: '{criterio}'")

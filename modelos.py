@@ -59,6 +59,9 @@ class Supervisor(Persona):
 
     def presentacion(self):
         return f"Supervisor: {self.nombre} (Legajo: {self.legajo}) , ({self.sector_cargo})"
+    
+    def __str__(self):
+        return f"{self.nombre} - Legajo: {self.legajo} ({self.sector_cargo})"
 
 # Clase Tecnico que hereda de Persona
 class Tecnico(Persona):
@@ -120,6 +123,9 @@ class Equipo:
     @sector.setter
     def sector(self, value):
         self._sector = value.strip()
+
+    def __str__(self):
+        return f"[{self.tag}] {self.descripcion} ({self.sector})"
 
 # Clase Tarea para representar las tareas asignadas a los técnicos
 class Tarea:
