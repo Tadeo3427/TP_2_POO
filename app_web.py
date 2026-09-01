@@ -6,7 +6,11 @@ from excepciones import MantenimientoError
 
 st.set_page_config(page_title="Gestión de Mantenimiento", layout="wide")
 
-gestor = GestorTareas()
+# Mantener la instancia del gestor en el estado de Streamlit
+if "gestor" not in st.session_state:
+    st.session_state.gestor = GestorTareas()
+
+gestor = st.session_state.gestor
 
 # Initialize session state para guardar el rol
 if "rol" not in st.session_state:
@@ -37,7 +41,7 @@ if st.session_state["rol"] == "Supervisor":
     opciones_menu = [
         "📋 Listar Tareas",
         "➕ Registrar Nueva Tarea",
-        "👤 Gestión de Personal",  
+        "👤 Gestión de Personal y Equipos",  
         "✏️ Modificar Estado",
         "🚫 Cancelar Tarea"
     ]
@@ -108,10 +112,10 @@ if opcion == "📋 Listar Tareas":
                 estado_fmt = t.estado.upper()
 
             # Desplegable/Tarjeta para cada tarea
-            with st.expander(f"OT N° {t.id} - {t.tag_equipo} | Estado: {estado_fmt}", expanded=False):
+            with st.expander(f"OT N° {t.id} - {t.equipo.tag} | Estado: {estado_fmt}", expanded=False):
                 col1, col2 = st.columns(2)
                 with col1:
-                    st.markdown(f"**Sector:** {t.sector}")
+                    st.markdown(f"**Sector:** {t.equipo.sector}")
                     st.markdown(f"**Solicitante:** {t.supervisor.nombre}")
                     st.markdown(f"**Técnico:** {t.tecnico.nombre}")
                     st.markdown(f"**Fecha Alta:** {t.fecha}")
@@ -131,22 +135,24 @@ elif opcion == "➕ Registrar Nueva Tarea":
     
     supervisores_cargados = gestor.listar_supervisores()
     tecnicos_cargados = gestor.listar_tecnicos()
+    equipos_cargados = gestor.listar_equipos()
 
-    if not supervisores_cargados or not tecnicos_cargados:
-        st.warning("⚠️ Para registrar una tarea, primero debe haber al menos un Supervisor y un Técnico registrados en el sistema.")
-        st.info("Por favor, diríjase al menú **'👤 Gestión de Personal'** para dar de alta al personal.")
+    if not supervisores_cargados or not tecnicos_cargados or not equipos_cargados:
+        st.warning("⚠️ Para registrar una tarea, primero debe haber al menos un Supervisor, un Técnico y un Equipo registrados en el sistema.")
+        st.info("Por favor, diríjase al menú **'👤 Gestión de Personal y Equipos'** o **'⚙️ Equipos'** para dar de alta los elementos necesarios.")
     else:
         with st.form("form_alta", clear_on_submit=True):
             col1, col2 = st.columns(2)
 
             with col1:
                 st.subheader("***Datos del Trabajo***")
-                tag = st.text_input("Tag del Equipo")
-                desc_eq = st.text_input("Descripción del Equipo")
-                sector = st.text_input("Sector")
-                detalle = st.text_area("Detalle de la Tarea a Realizar")
-                fecha_obj = st.date_input("Fecha de Alta", format="DD/MM/YYYY")
-                fecha = fecha_obj.strftime("%d/%m/%Y")
+                # Desplegable para seleccionar Equipo existente 
+                dict_eq = {f"{e.tag} - {e.descripcion} -- ({e.sector})": e for e in equipos_cargados}
+                eq_label = st.selectbox("Seleccione el Equipo:", list(dict_eq.keys()))
+                equipo_seleccionado = dict_eq[eq_label]
+
+                detalle = st.text_area("Detalle de la Tarea Solicitada")
+                fecha_obj = st.date_input("Fecha de Solicitud", format="DD/MM/YYYY")
 
             with col2:
                 st.subheader("*Asignación de Personal*")
@@ -164,15 +170,15 @@ elif opcion == "➕ Registrar Nueva Tarea":
             submitted = st.form_submit_button("💾 Guardar Tarea")
 
             if submitted:
+                # Se convierte la fecha de objeto date a string con formato
+                fecha_str = fecha_obj.strftime("%d/%m/%Y")
                 try:
                     nueva = gestor.registrar_tarea(
                         supervisor=supervisor_seleccionado,
                         tecnico=tecnico_seleccionado,
-                        tag_equipo=tag,
-                        descripcion_equipo=desc_eq,
-                        sector=sector,
+                        equipo=equipo_seleccionado,  # <--- Pasamos el objeto Equipo directo
                         detalle_tarea=detalle,
-                        fecha=fecha
+                        fecha=fecha_str              # <--- Pasamos el string formateado
                     )
                     st.success(f"✅ ¡Tarea registrada con éxito! OT N° asignado: {nueva.id}")
                 except MantenimientoError as e:
@@ -189,7 +195,7 @@ elif opcion == "✏️ Modificar Estado":
         st.info("No hay tareas en el sistema para modificar.")
     else:
         # Selector desplegable de OTs disponibles
-        dict_ots = {f"OT N° {t.id} - {t.tag_equipo} ({t.estado})": t.id for t in tareas_existentes}
+        dict_ots = {f"OT N° {t.id} - {t.equipo.tag} ({t.estado})": t.id for t in tareas_existentes}
         ot_seleccionada_label = st.selectbox("Seleccione la Orden de Trabajo:", list(dict_ots.keys()))
         ot_id = dict_ots[ot_seleccionada_label]
 
@@ -234,13 +240,13 @@ elif opcion == "🚫 Cancelar Tarea":
     if not tareas_existentes:
         st.info("No hay tareas en el sistema para cancelar.")
     else:
-        dict_ots = {f"OT N° {t.id} - {t.tag_equipo} ({t.estado})": t.id for t in tareas_existentes}
+        dict_ots = {f"OT N° {t.id} - {t.equipo.tag} ({t.estado})": t.id for t in tareas_existentes}
         ot_seleccionada_label = st.selectbox("Seleccione la Orden de Trabajo a cancelar:", list(dict_ots.keys()))
         ot_id = dict_ots[ot_seleccionada_label]
 
         tarea = gestor.buscar_por_ot(ot_id)
 
-        st.warning(f"⚠️ Está por cancelar la **OT N° {ot_id}** del equipo **{tarea.tag_equipo}**.")
+        st.warning(f"⚠️ Está por cancelar la **OT N° {ot_id}** del equipo **{tarea.equipo.tag}**.")
 
         if st.button("Confirmar Cancelación de OT"):
             try:
@@ -252,10 +258,10 @@ elif opcion == "🚫 Cancelar Tarea":
 # -------------------------------------------------------------------
 # 5. GESTIÓN DE PERSONAL
 # -------------------------------------------------------------------
-elif opcion == "👤 Gestión de Personal":
+elif opcion == "👤 Gestión de Personal y Equipos":
     st.header("👤 Alta y Gestión de Personal")
 
-    tab1, tab2 = st.tabs(["👔 Supervisores", "🔧 Técnicos"])
+    tab1, tab2, tab3 = st.tabs(["👔 Supervisores", "🔧 Técnicos", "⚙️ Equipos"])
 
     # --- PESTAÑA SUPERVISORES ---
     with tab1:
@@ -321,3 +327,31 @@ elif opcion == "👤 Gestión de Personal":
             st.table(tabla_tecs)
         else:
             st.info("No hay técnicos registrados en el sistema.")
+    # --- PESTAÑA EQUIPOS ---
+    with tab3:
+        st.subheader("Registrar Nuevo Equipo")
+        with st.form("form_alta_equipo"):
+            tag_e = st.text_input("Tag del Equipo")
+            desc_e = st.text_input("Descripción del Equipo")
+            sec_e = st.text_input("Sector / Ubicación", value="Mantenimiento General")
+            sub_eq = st.form_submit_button("💾 Guardar Equipo")
+
+            if sub_eq:
+                try:
+                    gestor.registrar_equipo(tag_e, desc_e, sec_e)
+                    st.success(f"✅ Equipo **{tag_e}** registrado correctamente.")
+                    st.rerun()
+                except MantenimientoError as e:
+                    st.error(f"⚠️ {e}")
+
+        st.divider()
+        st.subheader("📋 Equipos Registrados")
+        eqs = gestor.listar_equipos()
+        if eqs:
+            tabla_eqs = [
+                {"Tag": e.tag, "Descripción": e.descripcion, "Sector / Ubicación": e.sector}
+                for e in eqs
+            ]
+            st.table(tabla_eqs)
+        else:
+            st.info("No hay equipos registrados en el sistema.")
