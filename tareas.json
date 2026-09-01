@@ -1,48 +1,77 @@
 [
     {
         "id": 1,
-        "tag_equipo": "prueba2",
-        "descripcion_equipo": "prueba",
-        "sector": "pruena",
-        "detalle_tarea": "detalle de la tarea a realizar de prueba",
-        "fecha": "26/08/2026",
+        "equipo": {
+            "tag": "EQ-PRUEBA",
+            "descripcion": "Equipo de Prueba",
+            "sector": "Sector Prueba"
+        },
+        "detalle_tarea": "Detalle de tarea a realizar de prueba",
+        "fecha": "31/08/2026",
         "estado": "finalizado",
-        "fecha_realizado": "26/08/2026",
-        "tarea_realizada": "se realiza la tarea de prueba de manera correcta",
+        "fecha_realizado": "31/08/2026",
+        "tarea_realizada": "prueba de finalizar tarea, por favor dios si estas ahi que no se rompa todo el código",
         "supervisor": {
-            "dni": "8888888",
-            "nombre": "prueba repetición",
+            "dni": "40315848",
+            "nombre": "SUP PRUEBA",
             "sector_cargo": "Mantenimiento General",
-            "legajo": "5656"
+            "legajo": "1234"
         },
         "tecnico": {
             "dni": "12345678",
-            "nombre": "Tecnico Prueba",
-            "especialidad": "Prueba",
-            "legajo": "1111"
+            "nombre": "TEC PRUEBA",
+            "especialidad": "PRUEBA",
+            "legajo": "4321"
         }
     },
     {
         "id": 2,
-        "tag_equipo": "Imp-06",
-        "descripcion_equipo": "impresora HP 2016",
-        "sector": "Administración",
-        "detalle_tarea": "realizar limpieza de impresora, remplazo de cabezales. control de estado y nivel de tinta (remplazar de ser necesario)",
-        "fecha": "26/08/2026",
+        "equipo": {
+            "tag": "EQ-PRUEBA",
+            "descripcion": "Equipo de Prueba",
+            "sector": "Sector Prueba"
+        },
+        "detalle_tarea": "Prueba de cancelar tarea, por favor que no se rompa todo",
+        "fecha": "31/08/2026",
         "estado": "cancelado",
         "fecha_realizado": "",
         "tarea_realizada": "",
         "supervisor": {
-            "dni": "8888888",
-            "nombre": "prueba repetición",
+            "dni": "40315848",
+            "nombre": "SUP PRUEBA",
             "sector_cargo": "Mantenimiento General",
-            "legajo": "5656"
+            "legajo": "1234"
         },
         "tecnico": {
             "dni": "12345678",
-            "nombre": "Tecnico Prueba",
-            "especialidad": "Prueba",
+            "nombre": "TEC PRUEBA",
+            "especialidad": "PRUEBA",
+            "legajo": "4321"
+        }
+    },
+    {
+        "id": 3,
+        "equipo": {
+            "tag": "BS-5660",
+            "descripcion": "Embolsadora automática",
+            "sector": "Embolse"
+        },
+        "detalle_tarea": "Realizar PPM 365 Días",
+        "fecha": "31/08/2026",
+        "estado": "pendiente",
+        "fecha_realizado": "",
+        "tarea_realizada": "",
+        "supervisor": {
+            "dni": "87654321",
+            "nombre": "Sup Prueba 1",
+            "sector_cargo": "Mantenimiento General",
             "legajo": "1111"
+        },
+        "tecnico": {
+            "dni": "40315484",
+            "nombre": "Tadeo Agonil",
+            "especialidad": "Electricidad",
+            "legajo": "3427"
         }
     }
 ]

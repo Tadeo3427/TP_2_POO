@@ -167,7 +167,7 @@ class GestorTareas:
 
         # Validar duplicados
         for e in self._equipos:
-            if e.tag_equipo == tag_limpio:
+            if e.tag == tag_limpio:
                 raise CampoVacioError(f"Ya existe un equipo registrado con Tag {tag_limpio}.")
 
         equipo = Equipo(
@@ -178,6 +178,9 @@ class GestorTareas:
         self._equipos.append(equipo)
         self.guardar_equipos_en_json()
         return equipo
+
+    def listar_equipos(self) -> List[Equipo]:
+        return list(self._equipos)  
     # -------------------------------------------------------------------
     # 1. ALTA DE TAREA
     # -------------------------------------------------------------------
@@ -397,9 +400,11 @@ class GestorTareas:
         for t in self._tareas:
             datos.append({
                 "id": t.id,
-                "tag_equipo": t.equipo.tag,
-                "descripcion_equipo": t.equipo.descripcion,
-                "sector": t.equipo.sector,
+                "equipo": {
+                    "tag": t.equipo.tag,
+                    "descripcion": t.equipo.descripcion,
+                    "sector": t.equipo.sector
+                },
                 "detalle_tarea": t.detalle_tarea,
                 "fecha": t.fecha,
                 "estado": t.estado,
