@@ -1,11 +1,9 @@
 import json
 import os
-from typing import List, Optional
+from typing import List
 from modelos import Tarea, Supervisor, Tecnico, Equipo
-from excepciones import (
-    CampoVacioError,
-    TareaNoEncontradaError,
-    TareaNoModificableError,
+from excepciones import ( 
+    MantenimientoError,CampoVacioError, TareaNoEncontradaError, TareaNoModificableError,
 )
 
 
@@ -143,6 +141,24 @@ class GestorTareas:
         return tec
 
 
+    # --- Cambio de estado a técnicos y supervisores (Baja / Alta lógica) ---
+    def cambiar_estado_supervisor(self, legajo:str, activo:bool):
+        for s in self._supervisores:
+            if s.legajo == legajo:
+                s.activo = activo
+                self.guardar_personas_en_json()
+                return True
+        raise MantenimientoError(f"No se encontró Supervisor con N° de Legajo: {legajo}")
+
+    def cambiar_estado_tecnico(self, legajo:str, activo:bool):
+        for t in self._tecnicos:
+            if t.legajo == legajo:
+                t.activo = activo
+                self.guardar_personas_en_json()
+                return True
+        raise MantenimientoError(f"No se encontró Técnico con N° de Legajo: {legajo}")
+                
+
     def listar_supervisores(self) -> List[Supervisor]:
         return list(self._supervisores)
 
@@ -181,6 +197,18 @@ class GestorTareas:
 
     def listar_equipos(self) -> List[Equipo]:
         return list(self._equipos)  
+
+    # --- Cambio de estado a equipo (Baja / Alta lógica) ---
+    def cambiar_estado_equipo(self, tag: str, activo: bool):
+        for e in self._equipos:
+            if e.tag == tag:
+                e.activo = activo
+                self.guardar_equipos_en_json()
+                return True 
+        raise MantenimientoError(f"No se encontré el equipo con TAG {tag}")
+
+
+
     # -------------------------------------------------------------------
     # 1. ALTA DE TAREA
     # -------------------------------------------------------------------
@@ -300,6 +328,18 @@ class GestorTareas:
         filtradas = [t for t in self._tareas if t.estado == estado_buscado]
         return filtradas
 
+    #--- MÉTODOS DE LISTADO FILTRADO (Uso exlcusivo en interfaz de usuario para altas) ---
+
+    def Listar_equipos_activos(self) -> List[Equipo]:
+        return [e for e in self._equipos if e.activo]
+
+    def Listar_supervisores_activos(self) -> List[Supervisor]:
+            return [s for s in self._supervisores if s.activo]
+
+    def Listar_tecnicos_activos(self) -> List[Tecnico]:
+            return [t for t in self._tecnicos if t.activo]
+    
+
     # -------------------------------------------------------------------
     # 6. PERSISTENCIA EN ARCHIVOS JSON
     # -------------------------------------------------------------------
@@ -311,6 +351,7 @@ class GestorTareas:
                 "tag_equipo": e.tag,
                 "descripcion_equipo": e.descripcion,
                 "sector": e.sector,
+                "activo": e.activo
             }
             for e in self._equipos
         ]
@@ -330,6 +371,7 @@ class GestorTareas:
                         tag=e["tag_equipo"],
                         descripcion=e["descripcion_equipo"],
                         sector=e["sector"],
+                        activo=e.get("activo", True) # Carga la variable privada a través de __init__
                     )
                     for e in datos
                 ]
@@ -345,7 +387,8 @@ class GestorTareas:
                     "dni": s.dni,
                     "nombre": s.nombre,
                     "sector_cargo": s.sector_cargo,
-                    "legajo": s.legajo
+                    "legajo": s.legajo,
+                    "activo": s.activo
                 }
                 for s in self._supervisores
             ],
@@ -355,6 +398,7 @@ class GestorTareas:
                     "nombre": t.nombre,
                     "especialidad": t.especialidad,
                     "legajo": t.legajo,
+                    "activo": t.activo
                 }
                 for t in self._tecnicos
             ],
@@ -376,7 +420,8 @@ class GestorTareas:
                         dni=s["dni"],
                         nombre=s["nombre"],
                         sector_cargo=s["sector_cargo"],
-                        legajo=s["legajo"]
+                        legajo=s["legajo"],
+                        activo=s.get("activo", True)
                     )
                     for s in datos.get("supervisores", [])
                 ]
@@ -386,6 +431,7 @@ class GestorTareas:
                         nombre=t["nombre"],
                         especialidad=t["especialidad"],
                         legajo=t["legajo"],
+                        activo=t.get("activo", True)
                     )
                     for t in datos.get("tecnicos", [])
                 ]

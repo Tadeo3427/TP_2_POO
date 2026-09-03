@@ -25,13 +25,14 @@ class Persona(ABC):
     @abstractmethod
     def presentacion(self):
         raise NotImplementedError
-
+#---------------------------------------------------------------------------------------------------
 # Clase Supervisor que hereda de Persona
 class Supervisor(Persona):
-    def __init__(self, dni: str, nombre: str, sector_cargo: str, legajo: str):
+    def __init__(self, dni: str, nombre: str, sector_cargo: str, legajo: str, activo: bool = True):
         super().__init__(dni, nombre)
         self._sector_cargo = sector_cargo
         self._legajo = legajo
+        self._activo = activo
         self._historial_tareas = []
 
     @property
@@ -54,6 +55,14 @@ class Supervisor(Persona):
     def historial_tareas(self):
         return list(self._historial_tareas)
 
+    @property
+    def activo(self) -> bool:
+        return self._activo
+
+    @activo.setter
+    def activo(self, nuevo_estado):
+        self._activo = nuevo_estado
+
     def agregar_tarea(self, tarea_id: int):
         self._historial_tareas.append(tarea_id)
 
@@ -62,13 +71,14 @@ class Supervisor(Persona):
     
     def __str__(self):
         return f"{self.nombre} - Legajo: {self.legajo} ({self.sector_cargo})"
-
+#-----------------------------------------------------------------------------------------------
 # Clase Tecnico que hereda de Persona
 class Tecnico(Persona):
-    def __init__(self, dni: str, nombre: str, especialidad: str, legajo: str):
+    def __init__(self, dni: str, nombre: str, especialidad: str, legajo: str, activo: bool = True):
         super().__init__(dni, nombre)
         self._especialidad = especialidad
         self._legajo = legajo
+        self._activo = activo
 
     @property
     def especialidad(self):
@@ -86,19 +96,33 @@ class Tecnico(Persona):
     def legajo(self, value):
         self._legajo = value
 
+    @property
+    def activo(self) -> bool:
+        return self._activo
+
+    @activo.setter
+    def activo(self, nuevo_estado: bool):
+        self._activo = nuevo_estado
+
     def presentacion(self):
-        return f"Técnico: {self.nombre} , ({self.especialidad})"
+        return f"Técnico: {self.nombre} , ({self.especialidad}) - estado: {self.activo}"
+
+    def __str__(self):
+        return f"[{self.nombre}] {self.especialidad} - Estado: {self._activo})"
     
+#-------------------------------------------------------------------------------------------------    
 # Clase Equipo para representar los equipos de trabajo
 class Equipo:
     def __init__(self,
             tag:str,
             descripcion:str,
-            sector:str
+            sector:str,
+            activo:bool = True
     ):
         self._tag = tag.strip().upper()
         self._descripcion = descripcion.strip()
         self._sector = sector.strip()
+        self._activo = activo
 
     @property
     def tag(self):
@@ -115,7 +139,7 @@ class Equipo:
     @descripcion.setter
     def descripcion(self, value):
         self._descripcion = value.strip()
- 
+
     @property
     def sector(self):
         return self._sector
@@ -124,9 +148,17 @@ class Equipo:
     def sector(self, value):
         self._sector = value.strip()
 
-    def __str__(self):
-        return f"[{self.tag}] {self.descripcion} ({self.sector})"
+    @property
+    def activo(self) -> bool:
+        return self._activo
 
+    @activo.setter
+    def activo(self, nuevo_estado: bool):
+        self._activo = nuevo_estado 
+
+    def __str__(self):
+        return f"[{self.tag}] {self.descripcion} ({self.sector} - estado: {self.activo})"
+#--------------------------------------------------------------------------------------------
 # Clase Tarea para representar las tareas asignadas a los técnicos
 class Tarea:
     _ultimo_id = 0
