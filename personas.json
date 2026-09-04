@@ -4,13 +4,22 @@
             "dni": "40315848",
             "nombre": "SUP PRUEBA",
             "sector_cargo": "Mantenimiento General",
-            "legajo": "1234"
+            "legajo": "1234",
+            "activo": false
         },
         {
             "dni": "87654321",
             "nombre": "Sup Prueba 1",
             "sector_cargo": "Mantenimiento General",
-            "legajo": "1111"
+            "legajo": "1111",
+            "activo": false
+        },
+        {
+            "dni": "11223344",
+            "nombre": "Adrián Maravilla",
+            "sector_cargo": "Site VT",
+            "legajo": "1010",
+            "activo": true
         }
     ],
     "tecnicos": [
@@ -18,13 +27,22 @@
             "dni": "12345678",
             "nombre": "TEC PRUEBA",
             "especialidad": "PRUEBA",
-            "legajo": "4321"
+            "legajo": "4321",
+            "activo": false
         },
         {
             "dni": "40315484",
             "nombre": "Tadeo Agonil",
             "especialidad": "Electricidad",
-            "legajo": "3427"
+            "legajo": "3427",
+            "activo": true
+        },
+        {
+            "dni": "44332211",
+            "nombre": "Facundo Cambeces",
+            "especialidad": "Electromecánica",
+            "legajo": "SG-9090",
+            "activo": true
         }
     ]
 }

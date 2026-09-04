@@ -58,7 +58,7 @@
         },
         "detalle_tarea": "Realizar PPM 365 Días",
         "fecha": "31/08/2026",
-        "estado": "pendiente",
+        "estado": "en progreso",
         "fecha_realizado": "",
         "tarea_realizada": "",
         "supervisor": {
@@ -72,6 +72,56 @@
             "nombre": "Tadeo Agonil",
             "especialidad": "Electricidad",
             "legajo": "3427"
+        }
+    },
+    {
+        "id": 4,
+        "equipo": {
+            "tag": "N-5775",
+            "descripcion": "Noria Transversal de Oliver 3",
+            "sector": "Clasificación"
+        },
+        "detalle_tarea": "Falla en Noria N-5575 se dispara Guardamotor al intentar encender el equipo.",
+        "fecha": "01/09/2026",
+        "estado": "finalizado",
+        "fecha_realizado": "01/09/2026",
+        "tarea_realizada": "Se chequea falla en N-5775, Se controla continuidad de las bobinas y se encuentran OK. \n- Se revisa transmisión y se encuentra que mueve girando desde la paleta del motor. \nSe baja motorreductor y se desvincula a fin de verificar falla en reductor o motor.\nSe encuentra falla mecánica en el motor, se encuentran clavados los rodamientos del motor. \nSe retira un motor nuevo y se coloca brida del motor defectuoso, se vincula en el equipo y el mismo enciende perfectamente. \nSe realiza megado de bobinas de motor retirado, se encuentra ok aislación mayor a 550 Mohms.",
+        "supervisor": {
+            "dni": "11223344",
+            "nombre": "Adrián Maravilla",
+            "sector_cargo": "Site VT",
+            "legajo": "1010"
+        },
+        "tecnico": {
+            "dni": "44332211",
+            "nombre": "Facundo Cambeces",
+            "especialidad": "Electromecánica",
+            "legajo": "SG-9090"
+        }
+    },
+    {
+        "id": 5,
+        "equipo": {
+            "tag": "N-5775",
+            "descripcion": "Noria Transversal de Oliver 3",
+            "sector": "Clasificación"
+        },
+        "detalle_tarea": "Prueba de Registrar Nueva Tarea solo con el PERSONAL Y EQUIPOS que se encuentran en estado ACTIVO.",
+        "fecha": "03/09/2026",
+        "estado": "finalizado",
+        "fecha_realizado": "03/09/2026",
+        "tarea_realizada": "Prueba realizada con ÉXITO, se prueba crear la tarea y modificar progresivamente sus estados hasta finalizarla.",
+        "supervisor": {
+            "dni": "11223344",
+            "nombre": "Adrián Maravilla",
+            "sector_cargo": "Site VT",
+            "legajo": "1010"
+        },
+        "tecnico": {
+            "dni": "44332211",
+            "nombre": "Facundo Cambeces",
+            "especialidad": "Electromecánica",
+            "legajo": "SG-9090"
         }
     }
 ]

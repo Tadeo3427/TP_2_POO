@@ -133,13 +133,14 @@ if opcion == "📋 Listar Tareas":
 elif opcion == "➕ Registrar Nueva Tarea":
     st.header("➕ Formulario de Alta de Tarea")
     
-    supervisores_cargados = gestor.listar_supervisores()
-    tecnicos_cargados = gestor.listar_tecnicos()
-    equipos_cargados = gestor.listar_equipos()
+    supervisores_cargados = gestor.Listar_supervisores_activos()
+    tecnicos_cargados = gestor.Listar_tecnicos_activos()
+    equipos_cargados = gestor.Listar_equipos_activos()
 
     if not supervisores_cargados or not tecnicos_cargados or not equipos_cargados:
         st.warning("⚠️ Para registrar una tarea, primero debe haber al menos un Supervisor, un Técnico y un Equipo registrados en el sistema.")
-        st.info("Por favor, diríjase al menú **'👤 Gestión de Personal y Equipos'** o **'⚙️ Equipos'** para dar de alta los elementos necesarios.")
+        st.info("Por favor, diríjase al menú **'👤 Gestión de Personal y Equipos'** o **'⚙️ Equipos'** para dar de alta los elementos necesarios.\n " \
+        "***En Caso de tener Personal y Equipos cargados, chequear que el estado se encuentra activo.***")
     else:
         with st.form("form_alta", clear_on_submit=True):
             col1, col2 = st.columns(2)
@@ -261,9 +262,14 @@ elif opcion == "🚫 Cancelar Tarea":
 elif opcion == "👤 Gestión de Personal y Equipos":
     st.header("👤 Alta y Gestión de Personal")
 
-    tab1, tab2, tab3 = st.tabs(["👔 Supervisores", "🔧 Técnicos", "⚙️ Equipos"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(
+        ["👔 Supervisores",
+        "🔧 Técnicos",
+        "⚙️ Equipos",
+        "🔄 Activar / Desactivar",
+        "📋 Ver Todo"])
 
-    # --- PESTAÑA SUPERVISORES ---
+    # --- TABLA 1: PESTAÑA ALTA SUPERVISORES ---
     with tab1:
         st.subheader("Registrar Nuevo Supervisor")
         with st.form("form_alta_supervisor"):
@@ -293,7 +299,7 @@ elif opcion == "👤 Gestión de Personal y Equipos":
         else:
             st.info("No hay supervisores registrados en el sistema.")
 
-    # --- PESTAÑA TÉCNICOS ---
+    # --- TABLA 2:  PESTAÑA ALTA TÉCNICOS ---
     with tab2:
         st.subheader("Registrar Nuevo Técnico")
         with st.form("form_alta_tecnico"):
@@ -327,7 +333,7 @@ elif opcion == "👤 Gestión de Personal y Equipos":
             st.table(tabla_tecs)
         else:
             st.info("No hay técnicos registrados en el sistema.")
-    # --- PESTAÑA EQUIPOS ---
+    # --- TABLA 3: PESTAÑA ALTA EQUIPOS ---
     with tab3:
         st.subheader("Registrar Nuevo Equipo")
         with st.form("form_alta_equipo"):
@@ -355,3 +361,128 @@ elif opcion == "👤 Gestión de Personal y Equipos":
             st.table(tabla_eqs)
         else:
             st.info("No hay equipos registrados en el sistema.")
+
+    # --- TABLA 4: ACTIVAR/DESCATIVAR PERSONAL Y EQUIPOS (CAMBIAR ESTADO - BAJA LÓGICA) ---
+    with tab4:
+        st.subheader("🔄 Activar / Desactivar Personal y Equipos")
+        st.caption(" **Los elementos desactivados no aparecerán al momento de crear nuevas tareas," \
+        "pero se conservarán en el historial de tareas pasadas.**")
+
+        tipo_entidad = st.radio("Seleccione la entidad a modificar:", ["Técnicos",
+        "Supervisores","Equipos"], horizontal=True)
+
+        # --- ALTA/BAJA TÉCNICOS --- 
+        if tipo_entidad == "Técnicos":
+            todos_tecnicos = gestor.tecnicos # Lee la @property de todos los técnicos
+            if not todos_tecnicos:
+                st.info("*No hay técnicos cargados en el sitema.*")
+            else:
+                dict_t = {f"{'🟢' if t.activo else '🔴'}{t.nombre} (Legajo: {t.legajo}) - {t.especialidad}": t for t in todos_tecnicos}
+                tec_sel_label = st.selectbox("Seleccione el Técnico:", list(dict_t.keys()))
+                tec_obj = dict_t[tec_sel_label]
+
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write(f"**Estado actual:** {'Activo' if tec_obj.activo else 'Inactivo'}")
+                with col2:
+                    if tec_obj.activo:
+                        if st.button("🔴 Dar de Baja Técnico"):
+                            try:
+                                gestor.cambiar_estado_tecnico(tec_obj.legajo, False)
+                                st.success(f"Técnico {tec_obj.nombre} dado de baja.")
+                                st.rerun()
+                            except MantenimientoError as e:
+                                st.error(f"Error: {e}")
+                    else:
+                        if st.button("🟢 Reactivar Técnico"):
+                            try:
+                                gestor.cambiar_estado_tecnico(tec_obj.legajo, True)
+                                st.success(f"Técnico {tec_obj.nombre} reactivado.")
+                                st.rerun()
+                            except MantenimientoError as e:
+                                st.error(f"Error: {e}")
+
+        # --- ALTA/BAJA SUPERVISORES --- 
+        if tipo_entidad == "Supervisores":
+            todos_supervisores = gestor.supervisores # Lee la @property de todos los técnicos
+            if not todos_supervisores:
+                st.info("*No hay **Supervisores** cargados en el sitema.*")
+            else:
+                dict_s = {f"{'🟢' if s.activo else '🔴'}{s.nombre} (Legajo: {s.legajo}) - {s.sector_cargo}": s for s in todos_supervisores}
+                sup_sel_label = st.selectbox("Seleccione el Supervisor:", list(dict_s.keys()))
+                sup_obj = dict_s[sup_sel_label]
+
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write(f"**Estado actual:** {'Activo' if sup_obj.activo else 'Inactivo'}")
+                with col2:
+                    if sup_obj.activo:
+                        if st.button("🔴 Dar de Baja Técnico"):
+                            try:
+                                gestor.cambiar_estado_supervisor(sup_obj.legajo, False)
+                                st.success(f"Supervisor {sup_obj.nombre} dado de baja.")
+                                st.rerun()
+                            except MantenimientoError as e:
+                                st.error(f"Error: {e}")
+                    else:
+                        if st.button("🟢 Reactivar Supervisor"):
+                            try:
+                                gestor.cambiar_estado_supervisor(sup_obj.legajo, True)
+                                st.success(f"Supervisor {sup_obj.nombre} reactivado.")
+                                st.rerun()
+                            except MantenimientoError as e:
+                                st.error(f"Error: {e}")
+
+        # --- ALTA/BAJA EQUIPOS --- 
+        if tipo_entidad == "Equipos":
+            todos_equipos = gestor.equipos # Lee la @property de todos los técnicos
+            if not todos_equipos:
+                st.info("*No hay **EQUIPOS** cargados en el sitema.*")
+            else:
+                dict_e = {f"{'🟢' if e.activo else '🔴'}{e.tag} ( {e.descripcion}) - Sector: {e.sector}": e for e in todos_equipos}
+                eq_sel_label = st.selectbox("Seleccione el Equipo:", list(dict_e.keys()))
+                eq_obj = dict_e[eq_sel_label]
+
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write(f"**Estado actual:** {'Activo' if eq_obj.activo else 'Inactivo'}")
+                with col2:
+                    if eq_obj.activo:
+                        if st.button("🔴 Dar de Baja Equipo"):
+                            try:
+                                gestor.cambiar_estado_equipo(eq_obj.tag, False)
+                                st.success(f"Equipo {eq_obj.tag} dado de baja.")
+                                st.rerun()
+                            except MantenimientoError as e:
+                                st.error(f"Error: {e}")
+                    else:
+                        if st.button("🟢 Reactivar Equipo"):
+                            try:
+                                gestor.cambiar_estado_equipo(eq_obj.tag, True)
+                                st.success(f"Equipo {eq_obj.tag} reactivado.")
+                                st.rerun()
+                            except MantenimientoError as e:
+                                st.error(f"Error: {e}")
+
+        # TABLA 5: VER T0D0   (VISUALIZACIÓN DE ESTADOS)
+        with tab5:
+            st.subheader("Padrón General Registrado")
+            col_t, col_s, col_e = st.columns(3)
+
+            with col_t:
+                st.markdown("#### Técnicos")
+                for t in gestor.tecnicos:
+                    estado = "🟢 Activo" if t.activo else "🔴 Inactivo"
+                    st.write(f"- **{t.nombre}** ({t.legajo}) | {estado}")
+
+            with col_s:
+                st.markdown("#### Supervisores")
+                for s in gestor.supervisores:
+                    estado = "🟢 Activo" if s.activo else "🔴 Inactivo"
+                    st.write(f"- **{s.nombre}** ({s.legajo}) | {estado}")
+
+            with col_e:
+                st.markdown("#### Equipos")
+                for e in gestor.equipos:
+                    estado = "🟢 Activo" if e.activo else "🔴 Inactivo"
+                    st.write(f"- **{e.tag}** ({e.sector}) | {estado}")

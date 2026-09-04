@@ -2,16 +2,25 @@
     {
         "tag_equipo": "EQ-PRUEBA",
         "descripcion_equipo": "Equipo de Prueba",
-        "sector": "Sector Prueba"
+        "sector": "Sector Prueba",
+        "activo": false
     },
     {
         "tag_equipo": "CV-1515",
         "descripcion_equipo": "Cinta inclinada desde Webster a CV-2000",
-        "sector": "Deschalado 3"
+        "sector": "Deschalado 3",
+        "activo": true
     },
     {
         "tag_equipo": "BS-5660",
         "descripcion_equipo": "Embolsadora automática",
-        "sector": "Embolse"
+        "sector": "Embolse",
+        "activo": true
+    },
+    {
+        "tag_equipo": "N-5775",
+        "descripcion_equipo": "Noria Transversal de Oliver 3",
+        "sector": "Clasificación",
+        "activo": true
     }
 ]
