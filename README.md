@@ -67,39 +67,53 @@ El proyecto está diseñado siguiendo la separación de responsabilidades en cap
 
 ### Capa de Dominio (modelos.py):
 
-- **Abstracción y Herencia:** Clase base abstracta Persona(ABC) de la cual heredan Supervisor y Tecnico.
+- **Abstracción y Herencia:** Clase base abstracta ``Persona(ABC)`` de la cual heredan ``Supervisor`` y ``Técnico``.
 
-- **Polimorfismo:** Método obligatorio @abstractmethod def presentacion() con comportamientos específicos según el rol.
+- **Clase Entidad (``Equipo``):** Representa los activos físicos de la planta (``tag, descripción, sector, activo``).
 
-- **Encapsulamiento:** Decoradores @property y @setter para la gestión segura de los atributos.
+- **Polimorfismo:** Método obligatorio ``@abstractmethod def presentacion()`` con comportamientos específicos según el rol.
 
-- **Atributo de Clase:** Control autoincremental de identificadores en Tarea._ultimo_id.
+- **Encapsulamiento:** Decoradores ``@property`` y ``@setter`` para la gestión segura de los atributos.
+
+- **Atributo de Clase:** Control autoincremental de identificadores en ``Tarea._ultimo_id``.
 
 ### Capa de Control y Negocio (gestor.py):
 
-- **Patrón Controller/Manager:** La clase GestorTareas administra el estado en memoria, la máquina de estados de las OTs y la persistencia.
+- **Patrón Controller/Manager:** La clase ``GestorTareas`` administra el estado en memoria, la máquina de estados de las OTs y la persistencia.
 
-- **Encapsulamiento Defensivo:** Retorno de copias de listas (list(...)) en las propiedades para proteger el estado interno.
+- **Encapsulamiento Defensivo:** Retorno de copias de listas (``list(...)``) en las propiedades para proteger el estado interno.
+
+- **Filtrado de Entidades:** Métodos específicos (``obtener_*_activos()``) para alimentar la UI exclusivamente con elementos disponibles.
 
 - **Validaciones Robustas:** Prevención de campos vacíos, control de DNI/Legajo duplicados entre roles y control estricto del flujo de estados.
 
 ### Capa de Excepciones (excepciones.py):
 
-****Excepciones personalizadas derivadas de MantenimientoError (CampoVacioError, TareaNoEncontradaError, TareaNoModificableError).****
+****Excepciones personalizadas derivadas de ``MantenimientoError`` (``CampoVacioError, TareaNoEncontradaError, TareaNoModificableError``).****
 
 ### Capa de Interfaz (UI):
 
-- **app_web.py:** Interfaz principal basada en Web UI con Streamlit.
+- **``app_web.py``:** Interfaz Web moderna estructurada en pestañas (Altas, Baja/Alta Lógica, Filtros de OTs, Padrón General).
 
-- **main.py:** Punto de entrada secundario por consola (CLI) para depuración.
+- **``main.py``:** Punto de entrada secundario por consola (CLI) para depuración.
 
 # Reglas de Negocio Destacadas
 
 - **Gestión de Personal:**
 
-- **DNI strictly numérico (7 u 8 dígitos).**
+- **DNI estrictamente  numérico (7 u 8 dígitos).**
 
-- **Unicidad cruzada de DNI y Legajo** (un técnico y un supervisor no pueden compartir identificadores).
+- **Unicidad Cruzada:** Garantía de identificadores únicos para DNI/Legajo (entre técnicos y supervisores) y TAGs de equipos.
+
+- **Baja y Alta Lógica (``activo``):**
+
+  - Los **Técnicos, Supervisores** y **Equipos** no se eliminan físicamente de la base de datos.
+
+  - Al dar de baja una entidad (``activo = False``), esta deja de aparecer en los desplegables de alta de nuevas tareas.
+
+  - Se conservan de forma íntegra en las consultas del padrón general y en el historial de tareas previas para no romper la trazabilidad.
+
+  - Cualquier entidad desactivada puede ser reactivada en cualquier momento desde el panel de gestión.
 
 - **Ciclo de Vida de una Orden de Trabajo:**
 
@@ -114,9 +128,9 @@ El proyecto está diseñado siguiendo la separación de responsabilidades en cap
 ├── app_web.py          # Interfaz de usuario Web (Streamlit)
 ├── main.py             # Interfaz de consola (CLI) / Debug
 ├── gestor.py           # Controlador principal y Lógica de Negocio
-├── modelos.py          # Clases del dominio (Persona, Supervisor, Tecnico, Tarea)
+├── modelos.py          # Clases del dominio (Persona, Supervisor, Tecnico, Equipo, Tarea)
 ├── excepciones.py      # Excepciones personalizadas del sistema
 ├── personas.json       # Persistencia de supervisores y técnicos (generado autom.)
+├── equipos.json        # Persistencia de equipos de la planta (generado autom.)
 └── tareas.json         # Persistencia de órdenes de trabajo (generado autom.)
-```
 
