@@ -99,7 +99,7 @@ El proyecto está diseñado siguiendo la separación de responsabilidades en cap
 
 # Reglas de Negocio Destacadas
 
-- **Gestión de Personal:**
+### Gestión de Personal:
 
 - **DNI estrictamente  numérico (7 u 8 dígitos).**
 
@@ -115,7 +115,7 @@ El proyecto está diseñado siguiendo la separación de responsabilidades en cap
 
   - Cualquier entidad desactivada puede ser reactivada en cualquier momento desde el panel de gestión.
 
-- **Ciclo de Vida de una Orden de Trabajo:**
+### Ciclo de Vida de una Orden de Trabajo:**
 
 - **Transiciones permitidas:** pendiente ➡️ en progreso ➡️ finalizado.
 
